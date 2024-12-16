@@ -23,7 +23,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/login/signup/**").permitAll()  // Public endpoints
-                        .requestMatchers("/users/**","/borrowings/**","/books/**").permitAll()  // Only Admins can access user management
+                        .requestMatchers("/users/**","/borrowings/**","/books/**").permitAll()
                         .anyRequest().authenticated()  // Authenticate other requests
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

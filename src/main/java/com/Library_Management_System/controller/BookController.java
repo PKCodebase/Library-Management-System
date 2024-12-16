@@ -2,9 +2,9 @@ package com.Library_Management_System.controller;
 
 
 import com.Library_Management_System.entity.Book;
+import com.Library_Management_System.exception.AuthorNotFoundException;
 import com.Library_Management_System.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,15 +62,13 @@ public class BookController {
 
 
     @GetMapping("/search/author")
-    public List<Book> searchBooksByAuthor(@RequestParam String author){
+    public List<Book> searchBooksByAuthor(@RequestParam String author) throws AuthorNotFoundException {
         return bookService.searchBooksByAuthor(author);
     }
 
 
     @GetMapping("/search/titleAndAuthor")
-    public List<Book> searchBooksByTitleAndAuthor(@RequestParam String title, @RequestParam String author){
-        return bookService.searchBooksByTitleAndAuthor(title,author);
+    public List<Book> searchBooksByTitleAndAuthor(@RequestParam String title, @RequestParam String author) {
+        return bookService.searchBooksByTitleAndAuthor(title, author);
     }
-
-
 }

@@ -2,7 +2,7 @@ package com.Library_Management_System.service;
 
 import com.Library_Management_System.Util.JwtUtil;
 import com.Library_Management_System.entity.User;
-import com.Library_Management_System.enums.UserRole;
+import com.Library_Management_System.exception.UserNotFoundException;
 import com.Library_Management_System.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserService {
@@ -29,23 +28,31 @@ public class UserService {
     }
 
     public User getUserById(Long userId){
-        Optional<User> userOptional = userRepository.findById(userId);
-        return userOptional.orElse(null);
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isPresent()){
+            return user.get();
+        }
+        throw new UserNotFoundException("User not found with ID: " + userId);
     }
 
     public User updateUserById(Long userId, User userDetails) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-
-        existingUser.setName(userDetails.getName());
-        existingUser.setEmail(userDetails.getEmail());
-        existingUser.setPhone(userDetails.getPhone());
-
-        return userRepository.save(existingUser);
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isEmpty()) {
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
+        User user = existingUser.get();
+        user.setName(userDetails.getName());
+        user.setEmail(userDetails.getEmail());
+        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+        return userRepository.save(user);
     }
 
     public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        Optional<User> user =  userRepository.findByEmail(email);
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User not found with email: " + email);
+        }
+        return user;
     }
 
     public void deleteUserById(Long userId) {
@@ -53,7 +60,7 @@ public class UserService {
         if (user.isPresent()) {
             userRepository.deleteById(userId);
         } else {
-            throw new IllegalArgumentException("User not found with ID: " + userId);
+            throw new UserNotFoundException("User not found with ID: " + userId);
         }
     }
 }
