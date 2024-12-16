@@ -38,5 +38,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNoCopiesAvailableException(NoCopiesAvailableException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(AccessDeniedCustomException.class)
+    public ResponseEntity<String> handleAccessDeniedCustomException(AccessDeniedCustomException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
 
 }

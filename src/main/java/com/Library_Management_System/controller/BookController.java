@@ -5,6 +5,7 @@ import com.Library_Management_System.entity.Book;
 import com.Library_Management_System.exception.AuthorNotFoundException;
 import com.Library_Management_System.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class BookController {
 
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Book addBook(@RequestBody Book book) {
         return bookService.addBook(book);
     }
@@ -32,12 +34,14 @@ public class BookController {
 
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
         return bookService.updateBook(id, book);
     }
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return "Book deleted successfully!";
@@ -51,6 +55,7 @@ public class BookController {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
      public Book getBookById(@PathVariable Long id){
         return bookService.getBookById(id);
     }
@@ -68,7 +73,9 @@ public class BookController {
 
 
     @GetMapping("/search/titleAndAuthor")
-    public List<Book> searchBooksByTitleAndAuthor(@RequestParam String title, @RequestParam String author) {
-        return bookService.searchBooksByTitleAndAuthor(title, author);
+    public List<Book> searchBooksByTitleAndAuthor(@RequestParam String title, @RequestParam String author){
+        return bookService.searchBooksByTitleAndAuthor(title,author);
     }
+
+
 }

@@ -20,11 +20,13 @@ public class BorrowingController {
     private BorrowingService borrowingService;
 
     @PostMapping("/borrow")
+    @PreAuthorize("hasRole('ADMIN')")
     public Borrowing borrowBook(@RequestParam Long bookId, @RequestParam Long userId) {
         return borrowingService.borrowBook(bookId, userId);
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public Borrowing returnBook(@RequestParam Long borrowingId) {
         return borrowingService.returnBook(borrowingId);
     }
