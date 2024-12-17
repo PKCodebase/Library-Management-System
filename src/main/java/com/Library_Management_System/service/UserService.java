@@ -63,4 +63,13 @@ public class UserService {
             throw new UserNotFoundException("User not found with ID: " + userId);
         }
     }
+    public Optional<User> getUserByPhone(Long phone) {
+        Optional<User> user =  userRepository.findByPhone(phone);
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User not found with phone: " + phone);
+        }
+        return user;
+    }
+
+
 }

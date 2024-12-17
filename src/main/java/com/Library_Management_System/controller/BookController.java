@@ -55,7 +55,6 @@ public class BookController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
      public Book getBookById(@PathVariable Long id){
         return bookService.getBookById(id);
     }

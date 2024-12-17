@@ -1,5 +1,6 @@
 package com.Library_Management_System.Util;
 
+import com.Library_Management_System.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

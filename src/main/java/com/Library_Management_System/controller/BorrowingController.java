@@ -20,7 +20,6 @@ public class BorrowingController {
     private BorrowingService borrowingService;
 
     @PostMapping("/borrow")
-    @PreAuthorize("hasRole('ADMIN')")
     public Borrowing borrowBook(@RequestParam Long bookId, @RequestParam Long userId) {
         return borrowingService.borrowBook(bookId, userId);
     }
@@ -32,6 +31,7 @@ public class BorrowingController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getBorrowingsByUser(@PathVariable Long userId) {
         List<Borrowing> borrowings = borrowingService.getBorrowingsByUser(userId);
         if (borrowings.isEmpty()) {
@@ -42,6 +42,7 @@ public class BorrowingController {
     }
 
     @GetMapping("/book/{bookId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getBorrowingsByBook(@PathVariable Long bookId) {
         List<Borrowing> borrowings = borrowingService.getBorrowingsByBook(bookId);
         if (borrowings.isEmpty()) {

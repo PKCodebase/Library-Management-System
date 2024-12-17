@@ -40,7 +40,14 @@ public class BookService {
     }
 
     public void deleteBook(Long id) {
+        Optional<Book> book = bookRepository.findById(id);
+
+        if (book.isEmpty()) {
+            throw new BookNotFoundException("Book with ID " + id + " not found.");
+        }
+
         bookRepository.deleteById(id);
+        System.out.println("Book deleted successfully with ID " + id);
     }
 
 

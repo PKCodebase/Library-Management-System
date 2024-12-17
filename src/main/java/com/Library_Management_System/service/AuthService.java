@@ -28,7 +28,7 @@ public class AuthService {
 
 
     @Autowired
-    private  AuthRepository authRepository;
+    private AuthRepository authRepository;
 
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -39,7 +39,11 @@ public class AuthService {
 
     public void registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new IllegalArgumentException("Email already exist.");
+        }
+
+        if(userRepository.findByPhone(user.getPhone()).isPresent()){
+            throw new IllegalArgumentException("Phone number already exist.");
         }
 
         // Default role is USER
@@ -55,11 +59,11 @@ public class AuthService {
         Optional<User> user = authRepository.findByEmail(email);
 
         if (user.isEmpty()) {
-            throw new InvalidEmailException("Incorrect email");
+            throw new InvalidEmailException("Incorrect email.");
         }
 
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
-            throw new InvalidPasswordException("Incorrect password");
+            throw new InvalidPasswordException("Incorrect password.");
         }
         return jwtUtil.generateToken(user.get().getEmail(), Collections.singletonList(user.get().getRole().name()));
     }

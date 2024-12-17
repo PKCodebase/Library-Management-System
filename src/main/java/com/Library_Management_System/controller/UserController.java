@@ -64,4 +64,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting user");
         }
     }
+    @GetMapping("/phone")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> getUserByPhone(@RequestParam Long phone) {
+        return userService.getUserByPhone(phone)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

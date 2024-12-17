@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/books/**").hasRole("ADMIN")  // Only Admin can POST (add books)
                         .requestMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")  // Only Admin can PUT (update books)
                         .requestMatchers(HttpMethod.DELETE, "/books/**").hasRole("ADMIN")  // Only Admin can DELETE books
-                        .requestMatchers(HttpMethod.POST,"/borrowings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/borrowings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/borrowings/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
