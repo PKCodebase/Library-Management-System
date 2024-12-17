@@ -28,26 +28,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String token = getTokenFromRequest(request);
+        String path = request.getServletPath();
+        System.out.println("Incoming request to path: " + path);
 
+
+        if (path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui") || path.equals("/swagger-ui.html")) {
+            System.out.println("Skipping JWT validation for public endpoint.");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = getTokenFromRequest(request);
         if (token != null && jwtUtil.validateToken(token)) {
             String username = jwtUtil.extractUsername(token);
-            List<String> roles = jwtUtil.extractRoles(token);  // Extract roles as List
+            List<String> roles = jwtUtil.extractRoles(token);
 
-            // Convert roles to authorities
             List<SimpleGrantedAuthority> authorities = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))  // Prefix "ROLE_" for Spring Security
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
 
-            // Set authentication in SecurityContext
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("User authenticated: " + username + ", roles: " + roles);
+        } else {
+            System.out.println("Invalid or missing JWT token.");
         }
 
         filterChain.doFilter(request, response);
     }
-
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

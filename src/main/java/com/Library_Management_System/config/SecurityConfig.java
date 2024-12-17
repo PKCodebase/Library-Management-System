@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.access.AccessDeniedHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -18,31 +17,31 @@ public class SecurityConfig {
     @Autowired
     private JwtUtil jwtUtil;
 
-
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler; // Inject the custom handler
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/login/signup/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/login/signup/**").permitAll()
                         .requestMatchers("/users/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/books/**","/borrowing/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST, "/books/**").hasRole("ADMIN")  // Only Admin can POST (add books)
-                        .requestMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")  // Only Admin can PUT (update books)
-                        .requestMatchers(HttpMethod.DELETE, "/books/**").hasRole("ADMIN")  // Only Admin can DELETE books
-                        .requestMatchers(HttpMethod.GET,"/borrowings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/books/**", "/borrowing/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/borrowings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/borrowings/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler)); // Use the custom handler
+                .exceptionHandling(exception -> exception.accessDeniedHandler(customAccessDeniedHandler));
 
         return http.build();
     }
