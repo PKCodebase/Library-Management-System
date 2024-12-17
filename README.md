@@ -77,3 +77,5 @@ PUT /users/{userId}: Update user by ID.
 GET /users/email: Get user by email.
 
 DELETE /users/{userId}: Delete user by ID.
+
+GET /users/phone :Get User By Phonenumber.
