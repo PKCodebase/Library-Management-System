@@ -6,7 +6,6 @@ import com.Library_Management_System.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,17 +57,17 @@ public class BookService {
         }
         return books;
     }
-
-    public Book getBookById(Long id){
-        Optional<Book> books =  bookRepository.findById(id);
-        if(books.isEmpty()){
-            throw new BookNotFoundException ("Book Not Found ");
+    public Optional<Book> getBookById(Long id) {
+        Optional<Book> book = bookRepository.findById(id);
+        if (book.isEmpty()) {
+            throw new BookNotFoundException("Book with ID " + id + " not found.");
         }
-        return books.get();
+        return  book;
+
     }
 
     public List<Book> searchBooksByAuthor(String author) throws AuthorNotFoundException {
-        List<Book> books =  bookRepository.findBookByAuthor(author);
+        List<Book> books =  bookRepository.findByAuthorContainingIgnoreCase(author);
         if(books.isEmpty()){
             throw new AuthorNotFoundException(author + " : This author Book is not available ");
         }
@@ -76,7 +75,7 @@ public class BookService {
     }
 
     public List<Book> searchBooksByTitle(String title){
-        List<Book> books = bookRepository.findBookByTitle(title);
+        List<Book> books = bookRepository.findByTitleContainingIgnoreCase(title);
         if(books.isEmpty()){
             throw new BookNotFoundException(title + " : Book Not Found ");
         }

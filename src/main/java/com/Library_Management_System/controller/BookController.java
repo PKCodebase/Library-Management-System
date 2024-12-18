@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -55,7 +57,7 @@ public class BookController {
 
 
     @GetMapping("/{id}")
-     public Book getBookById(@PathVariable Long id){
+     public Optional<Book> getBookById(@PathVariable Long id){
         return bookService.getBookById(id);
     }
 
