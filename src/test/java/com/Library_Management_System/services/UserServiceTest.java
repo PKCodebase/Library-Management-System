@@ -1,7 +1,9 @@
 package com.Library_Management_System.services;
 
+import com.Library_Management_System.Util.UserUtil;
 import com.Library_Management_System.entity.User;
-import com.Library_Management_System.enums.UserRole;
+import com.Library_Management_System.exception.NullValueException;
+import com.Library_Management_System.exception.UserNotFoundException;
 import com.Library_Management_System.repository.UserRepository;
 import com.Library_Management_System.service.Impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,11 +11,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static com.Library_Management_System.Util.UserUtil.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
@@ -28,66 +35,132 @@ public class UserServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    @Mock
+    private PasswordEncoder  passwordEncoder;
+
+
     private User user;
 
     @Test
     public void getAllUsers(){
-        User user1 = new User();
-        user1.setId(1L);
-        user1.setName("John Doe");
-        user1.setEmail("john.doe@example.com");
-        user1.setPassword("password123");
-        user1.setRole(UserRole.USER);
 
-
-        User user2 = new User();
-        user2.setId(2L);
-        user2.setName("John Doe");
-        user2.setEmail("john.doe@example.com");
-        user2.setPassword("password123");
-        user2.setRole(UserRole.ADMIN);
-
-        List<User> userList = new ArrayList<>();
-
-        userList.add(user1);
-        userList.add(user2);
-        when(userRepository.findAll()).thenReturn(userList);
+        List<User> users = List.of(userEntity(),userEntity2(),adminEntity());
+        when(userRepository.findAll()).thenReturn(users);
 
         List<User> result = userServiceImpl.getAllUsers();
-        assert(result.size() == 2);
-        assert(result.get(0).getName().equals("John Doe"));
-        assert(result.get(1).getName().equals("John Doe"));
-        assert(result.get(0).getEmail().equals("john.doe@example.com"));
-        assert(result.get(1).getEmail().equals("john.doe@example.com"));
-        assert(result.get(0).getPassword().equals("password123"));
-        assert(result.get(1).getPassword().equals("password123"));
-        assert(result.get(0).getRole().equals(UserRole.USER));
-        assert(result.get(1).getRole().equals(UserRole.ADMIN));
-        assert(result.get(0).getId() == 1L);
-        assert(result.get(1).getId() == 2L);
-        assert(result.get(0).getId() != result.get(1).getId());
+
+        assertNotNull(result, "Result should not be null");
+        assertEquals(3, result.size(), "Expected 3 users in the result");
+        assertEquals("User", result.get(0).getName(), "First user's name should be 'User'");
+        assertEquals("Admin", result.get(2).getName(), "Last user's name should be 'Admin'");
+
+        verify(userRepository, times(1)).findAll();
     }
     @Test
-    public void getUserById(){
-        User user1 = new User();
+    public void getAllUsersFailure(){
+        when(userRepository.findAll()).thenThrow(new NullValueException("Database error"));
+
+        try {
+            userServiceImpl.getAllUsers();
+            fail("Expected exception to be thrown");
+        } catch (NullValueException e) {
+            assertEquals("Database error", e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void getUserByIdSuccess(){
+        User user1 = UserUtil.userEntity();
         user1.setId(1L);
-        user1.setName("John Doe");
-        user1.setEmail("john.doe@example.com");
-        user1.setPassword("password123");
-        user1.setRole(UserRole.USER);
-
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user1));
-
         User result = userServiceImpl.getUserById(1L);
-        assert(result.getName().equals("John Doe"));
-        assert(result.getEmail().equals("john.doe@example.com"));
-        assert(result.getPassword().equals("password123"));
-        assert(result.getRole().equals(UserRole.USER));
-        assert(result.getId() == 1L);
+       verify(userRepository, times(1)).findById(1L);
+
     }
 
     @Test
-    public void updateUserById(){
-        
+    public void getUserByIdFailure(){
+     User user1 = UserUtil.userEntity();
+     userRepository.save(user1);
+     assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserById(2L));
+     verify(userRepository, times(1)).findById(2L);
     }
+    @Test
+    public void updatedUserSuccess() {
+        User user1 = UserUtil.userEntity();
+        user1.setId(1L);
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user1));
+        when(userRepository.save(user1)).thenReturn(user1);
+        userServiceImpl.updateUserById(1L, user1);
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).save(user1);
+    }
+
+
+
+
+    @Test
+    public void updateUserFailure(){
+        User user1 = UserUtil.userEntity();
+        user1.setId(1L);
+        when(userRepository.findById(1L)).thenThrow(new UserNotFoundException("User not found"));
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.updateUserById(1L, user1));
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void getUserByEmailSuccess(){
+        User user1 = UserUtil.userEntity();
+        user1.setEmail("xyz@gmail.com");
+        when(userRepository.findByEmail("xyz@gmail.com")).thenReturn(java.util.Optional.of(user1));
+         userServiceImpl.getUserByEmail("xyz@gmail.com");
+        verify(userRepository, times(1)).findByEmail("xyz@gmail.com");
+    }
+
+    @Test
+    public void getUserByEmailFailure(){
+        User user1 = UserUtil.userEntity();
+        user1.setEmail("xyz@gmail.com");
+        when(userRepository.findByEmail("xyz@gmail.com")).thenThrow(new UserNotFoundException("User not found"));
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserByEmail("xyz@gmail.com"));
+        verify(userRepository, times(1)).findByEmail("xyz@gmail.com");
+    }
+
+    @Test
+    public void getUserByPhoneSuccess(){
+        User user1 = UserUtil.userEntity();
+        user1.setPhone(8767696898L);
+        when(userRepository.findByPhone(8767696898L)).thenReturn(Optional.of(user1));
+        userServiceImpl.getUserByPhone(8767696898L);
+        verify(userRepository, times(1)).findByPhone(8767696898L);
+    }
+
+    @Test
+    public void getUserByPhoneFailure(){
+        User user1 = UserUtil.userEntity();
+        user1.setPhone(8767696898L);
+        when(userRepository.findByPhone(8767696898L)).thenThrow(new UserNotFoundException("User not found"));
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserByPhone(8767696898L));
+        verify(userRepository, times(1)).findByPhone(8767696898L);
+    }
+
+    @Test
+    public void deleteUserByIdSuccess(){
+        User user1 = UserUtil.userEntity();
+        user1.setId(1L);
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user1));
+        userServiceImpl.deleteUserById(1L);
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void deleteUserByIdFailure(){
+        User user1 = UserUtil.userEntity();
+        userRepository.save(user1);
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.deleteUserById(2L));
+        verify(userRepository, times(1)).findById(2L);
+    }
+
+
 }

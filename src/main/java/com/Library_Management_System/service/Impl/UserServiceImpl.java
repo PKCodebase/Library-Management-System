@@ -26,7 +26,11 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public List<User> getAllUsers(){
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        if(users.isEmpty()){
+            throw new UserNotFoundException("No users found");
+        }
+        return users;
     }
     @Override
     public User getUserById(Long userId){
@@ -42,12 +46,13 @@ public class UserServiceImpl implements UserService {
         if (existingUser.isEmpty()) {
             throw new UserNotFoundException("User not found with ID: " + userId);
         }
-        User user = existingUser.get();
-        user.setName(userDetails.getName());
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
-        return userRepository.save(user);
+        User updatedUser = existingUser.get();
+        updatedUser.setName(userDetails.getName());
+        updatedUser.setEmail(userDetails.getEmail());
+        updatedUser.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+        return userRepository.save(updatedUser);
     }
+
     @Override
     public Optional<User> getUserByEmail(String email) {
         Optional<User> user =  userRepository.findByEmail(email);

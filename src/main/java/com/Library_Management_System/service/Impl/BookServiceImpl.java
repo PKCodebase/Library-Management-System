@@ -3,6 +3,7 @@ package com.Library_Management_System.service.Impl;
 import com.Library_Management_System.entity.Book;
 import com.Library_Management_System.exception.AuthorNotFoundException;
 import com.Library_Management_System.exception.BookNotFoundException;
+import com.Library_Management_System.exception.NullValueException;
 import com.Library_Management_System.repository.BookRepository;
 import com.Library_Management_System.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,10 @@ public class BookServiceImpl implements BookService {
     @Override
     @PreAuthorize("hasAuthorize=Admin")
     public Book addBook(Book book) {
+       if(book == null)
+       {
+           throw new NullValueException("Book is null");
+       }
         return bookRepository.save(book);
     }
 
@@ -100,11 +105,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> searchBooksByTitleAndAuthor(String title, String author) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be null or empty");
-        }
-        if (author == null || author.trim().isEmpty()) {
-            throw new IllegalArgumentException("Author cannot be null or empty");
+
+        if (title == null || author == null) {
+            throw new BookNotFoundException("Title and author must not be null");
         }
 
         List<Book> books = bookRepository.findBookByTitleAndAuthor(title, author);

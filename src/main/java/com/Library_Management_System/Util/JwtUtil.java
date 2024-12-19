@@ -1,6 +1,5 @@
 package com.Library_Management_System.Util;
 
-import com.Library_Management_System.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -40,7 +39,7 @@ public class JwtUtil {
     }
 
     // Extract roles from the token
-    public List<String> extractRoles(String token) {
+    public List extractRoles(String token) {
         return getClaims(token).get("roles", List.class); // Extract roles as List
     }
 

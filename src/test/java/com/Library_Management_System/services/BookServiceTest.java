@@ -4,7 +4,7 @@ import com.Library_Management_System.Util.BookUtil;
 import com.Library_Management_System.entity.Book;
 import com.Library_Management_System.exception.AuthorNotFoundException;
 import com.Library_Management_System.exception.BookNotFoundException;
-import com.Library_Management_System.service.BookService;
+import com.Library_Management_System.exception.NullValueException;
 import com.Library_Management_System.repository.BookRepository;
 import com.Library_Management_System.service.Impl.BookServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +41,12 @@ public class BookServiceTest {
         Book book = BookUtil.bookEntity();
         bookRepository.save(book);
         verify(bookRepository, times(1)).save(book);
+    }
+    @Test
+    public void addBookTestFailure() {
+        Book book = BookUtil.bookEntity();
+        bookRepository.save(book);
+        assertThrows(NullValueException.class, () -> bookServiceImpl.addBook(null));
     }
 
 
@@ -148,6 +154,8 @@ public class BookServiceTest {
 
         List<Book> result = bookServiceImpl.searchBooksByTitle("Title");
         assertEquals(2, result.size());
+        verify(bookRepository, times(1)).findByTitleContainingIgnoreCase("Title");
+
     }
 
     @Test
@@ -156,6 +164,7 @@ public class BookServiceTest {
         List<Book> books = List.of(bookEntity2(), bookEntity3());
         when(bookRepository.findByTitleContainingIgnoreCase("Title")).thenReturn(books);
         when(bookRepository.findByTitleContainingIgnoreCase("Title1")).thenReturn(Collections.emptyList());
+
 
         List<Book> result = bookServiceImpl.searchBooksByTitle("Title");
         assertEquals(2, result.size());

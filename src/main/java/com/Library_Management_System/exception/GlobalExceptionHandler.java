@@ -42,5 +42,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAccessDeniedCustomException(AccessDeniedCustomException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
+    @ExceptionHandler(NullValueException.class)
+    public ResponseEntity<String> handleNullValueException(NullValueException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
 }
