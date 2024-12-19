@@ -19,71 +19,16 @@ import java.util.Optional;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Service
-public class BorrowingService {
+public interface BorrowingService {
 
-    @Autowired
-    private BorrowingRepository borrowingRepository;
+    Borrowing borrowBook( Long bookId,Long userId) throws UserNotFoundException, BookNotFoundException, NoCopiesAvailableException;
 
-    @Autowired
-    private BookRepository bookRepository;
+    Borrowing returnBook(Long borrowingId) throws UserNotFoundException, BookNotFoundException;
 
-    @Autowired
-    private UserRepository userRepository;
+    List<Borrowing> getBorrowingsByUser (Long userId);
 
-    public Borrowing borrowBook(Long bookId, Long userId) throws NoCopiesAvailableException {
-        Optional<Book> book = bookRepository.findById(bookId);
-        if(book.isEmpty()){
-            throw new BookNotFoundException("Book not found");
-        }
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty()){
-            throw new UserNotFoundException("User not found");
-        }
+    List<Borrowing> getBorrowingsByBook (Long bookId);
 
-        if (book.get().getCopiesAvailable() <= 0) {
-            throw new NoCopiesAvailableException("No copies available for this book");
-        }
 
-        Borrowing borrowing = new Borrowing();
-        borrowing.setBook(book.get());
-        borrowing.setUser(user.get());
-        borrowing.setBorrowDate(LocalDate.now());
-        borrowing.setReturnDate(LocalDate.now().plusDays(14));
-        borrowing.setReturned(false);
-
-        book.get().setCopiesAvailable(book.get().getCopiesAvailable() - 1);
-        bookRepository.save(book.get());
-
-        return borrowingRepository.save(borrowing);
-    }
-
-    public Borrowing returnBook(Long borrowingId) {
-        Optional<Borrowing> borrowing = borrowingRepository.findById(borrowingId);
-        if(borrowing.isEmpty()){
-            throw new BookNotFoundException("Book not found with this id.");
-        }
-        if (borrowing.get().isReturned()) {
-            throw new BookNotFoundException("Book already returned");
-        }
-        borrowing.get().setReturned(true);
-        borrowing.get().getBook().setCopiesAvailable(borrowing.get().getBook().getCopiesAvailable() + 1);
-        return borrowingRepository.save(borrowing.get());
-    }
-
-    public List<Borrowing> getBorrowingsByUser (Long userId){
-        List<Borrowing> borrowing =  borrowingRepository.findByUserId(userId);
-        if(borrowing.isEmpty()){
-            throw new UserNotFoundException("No Book borrowed");
-        }
-        return borrowingRepository.findByUserId(userId);
-    }
-
-    public List<Borrowing> getBorrowingsByBook (Long bookId){
-        List<Borrowing> borrowings =  borrowingRepository.findByBookId(bookId);
-        if(borrowings.isEmpty()){
-            throw new BookNotFoundException("No any people borrowed this book");
-        }
-        return borrowingRepository.findByBookId(bookId);
-    }
 
 }

@@ -11,92 +11,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookService {
-    @Autowired
-    private BookRepository bookRepository;
+public interface BookService {
+    Book addBook(Book book);
 
+    List<Book> getAllBooks();
 
-    @PreAuthorize("hasAuthorize=Admin")
-    public Book addBook(Book book) {
-        return bookRepository.save(book);
-    }
+    void deleteBook(Long id) throws BookNotFoundException;
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
+    Book updateBook(Long id, Book book) throws BookNotFoundException;
 
-    public Book updateBook(Long id, Book book) {
-        Optional<Book> existingBook = bookRepository.findById(id);
-        if (existingBook.isEmpty()) {
-            throw new BookNotFoundException("Book not found with ID: " + id);
-        }
-        Book updatedBook = existingBook.get();
-        updatedBook.setTitle(book.getTitle());
-        updatedBook.setAuthor(book.getAuthor());
-        updatedBook.setCategory(book.getCategory());
-        updatedBook.setCopiesAvailable(book.getCopiesAvailable());
-        return bookRepository.save(updatedBook);
-    }
+    List<Book> searchBookByCategory(String category);
 
-    public void deleteBook(Long id) {
-        Optional<Book> book = bookRepository.findById(id);
+    Optional<Book> getBookById(Long id);
 
-        if (book.isEmpty()) {
-            throw new BookNotFoundException("Book with ID " + id + " not found.");
-        }
+    List<Book> searchBooksByTitle(String title);
 
-        bookRepository.deleteById(id);
-        System.out.println("Book deleted successfully with ID " + id);
-    }
+    List<Book> searchBooksByAuthor(String author) throws AuthorNotFoundException;
 
-
-    public List<Book> searchBookByCategory(String category){
-       List<Book> books = bookRepository.findBookByCategory(category);
-        if(books.isEmpty()){
-            throw new BookNotFoundException (category + " : No Books Available ");
-        }
-        return books;
-    }
-    public Optional<Book> getBookById(Long id) {
-        Optional<Book> book = bookRepository.findById(id);
-        if (book.isEmpty()) {
-            throw new BookNotFoundException("Book with ID " + id + " not found.");
-        }
-        return  book;
-
-    }
-
-    public List<Book> searchBooksByAuthor(String author) throws AuthorNotFoundException {
-        List<Book> books =  bookRepository.findByAuthorContainingIgnoreCase(author);
-        if(books.isEmpty()){
-            throw new AuthorNotFoundException(author + " : This author Book is not available ");
-        }
-        return books;
-    }
-
-    public List<Book> searchBooksByTitle(String title){
-        List<Book> books = bookRepository.findByTitleContainingIgnoreCase(title);
-        if(books.isEmpty()){
-            throw new BookNotFoundException(title + " : Book Not Found ");
-        }
-        return books;
-    }
-
-    public List<Book> searchBooksByTitleAndAuthor(String title, String author) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be null or empty");
-        }
-        if (author == null || author.trim().isEmpty()) {
-            throw new IllegalArgumentException("Author cannot be null or empty");
-        }
-
-        List<Book> books = bookRepository.findBookByTitleAndAuthor(title, author);
-        if (books.isEmpty()) {
-            throw new BookNotFoundException("No books found with title: " + title + " and author: " + author);
-        }
-        return books;
-    }
-
-
-
+    List<Book> searchBooksByTitleAndAuthor(String title, String author);
 }

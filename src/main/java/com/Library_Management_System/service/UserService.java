@@ -12,64 +12,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class UserService {
-
-    @Autowired
-    private  UserRepository userRepository;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
-    }
-
-    public User getUserById(Long userId){
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isPresent()){
-            return user.get();
-        }
-        throw new UserNotFoundException("User not found with ID: " + userId);
-    }
-
-    public User updateUserById(Long userId, User userDetails) {
-        Optional<User> existingUser = userRepository.findById(userId);
-        if (existingUser.isEmpty()) {
-            throw new UserNotFoundException("User not found with ID: " + userId);
-        }
-        User user = existingUser.get();
-        user.setName(userDetails.getName());
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
-        return userRepository.save(user);
-    }
-
-    public Optional<User> getUserByEmail(String email) {
-        Optional<User> user =  userRepository.findByEmail(email);
-        if(user.isEmpty()){
-            throw new UserNotFoundException("User not found with email: " + email);
-        }
-        return user;
-    }
-
-    public void deleteUserById(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            userRepository.deleteById(userId);
-        } else {
-            throw new UserNotFoundException("User not found with ID: " + userId);
-        }
-    }
-    public Optional<User> getUserByPhone(Long phone) {
-        Optional<User> user =  userRepository.findByPhone(phone);
-        if(user.isEmpty()){
-            throw new UserNotFoundException("User not found with phone: " + phone);
-        }
-        return user;
-    }
+public interface UserService {
 
 
+     List<User> getAllUsers();
+
+    User getUserById(Long userId) throws UserNotFoundException;
+
+     User updateUserById(Long userId,  User userDetails) throws UserNotFoundException;
+
+    Optional<User> getUserByEmail(String email);
+    Optional<User> getUserByPhone(Long phone);
+   void deleteUserById(Long userId) throws UserNotFoundException;
 }

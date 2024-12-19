@@ -4,6 +4,7 @@ package com.Library_Management_System.controller;
 import com.Library_Management_System.entity.Book;
 import com.Library_Management_System.exception.AuthorNotFoundException;
 import com.Library_Management_System.service.BookService;
+import com.Library_Management_System.service.Impl.BookServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
