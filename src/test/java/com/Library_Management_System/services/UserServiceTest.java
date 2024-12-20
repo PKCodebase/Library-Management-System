@@ -86,6 +86,14 @@ public class UserServiceTest {
      verify(userRepository, times(1)).findById(2L);
     }
     @Test
+    public void getUserByEmailNotFound(){
+        User user1 = UserUtil.userEntity();
+        user1.setEmail("xyz@gmail.com");
+        userRepository.save(user1);
+        assertThrows(UserNotFoundException.class, () -> userServiceImpl.getUserByEmail("xyz@gmail.com"));
+        verify(userRepository, times(1)).findByEmail("xyz@gmail.com");
+    }
+    @Test
     public void updatedUserSuccess() {
         User user1 = UserUtil.userEntity();
         user1.setId(1L);

@@ -1,8 +1,8 @@
 package com.Library_Management_System.controller;
 
 import com.Library_Management_System.entity.User;
-import com.Library_Management_System.exception.InvalidEmailException;
-import com.Library_Management_System.exception.InvalidPasswordException;
+import com.Library_Management_System.exception.IncorrectEmailException;
+import com.Library_Management_System.exception.IncorrectPasswordException;
 import com.Library_Management_System.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
             authService.registerUser(user);
-            return ResponseEntity.ok("User registered successfully");
+            return ResponseEntity.ok("Registered successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -34,7 +34,7 @@ public class AuthController {
             return ResponseEntity.ok(token);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (InvalidPasswordException | InvalidEmailException e) {
+        } catch (IncorrectPasswordException | IncorrectEmailException e) {
             throw new RuntimeException(e);
         }
     }

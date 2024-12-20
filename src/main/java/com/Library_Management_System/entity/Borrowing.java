@@ -71,14 +71,7 @@ public class Borrowing {
         this.returned = returned;
     }
 
-    public Borrowing(Long id, Book book, User user, LocalDate borrowDate, LocalDate returnDate, boolean returned) {
-        this.id = id;
-        this.book = book;
-        this.user = user;
-        this.borrowDate = borrowDate;
-        this.returnDate = returnDate;
-        this.returned = returned;
-    }
+
 
     public Borrowing() {
 
