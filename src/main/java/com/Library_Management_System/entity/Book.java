@@ -55,13 +55,6 @@ public class Book {
         this.copiesAvailable = copiesAvailable;
     }
 
-    public Book(Long id, String title, String author, String category, int copiesAvailable) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.category = category;
-        this.copiesAvailable = copiesAvailable;
-    }
 
     public Book() {
 

@@ -1,6 +1,7 @@
 package com.Library_Management_System.controller;
 
 import com.Library_Management_System.entity.User;
+import com.Library_Management_System.exception.UserNotFoundException;
 import com.Library_Management_System.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +30,21 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<User> getUserById(@PathVariable Long userId){
         User user = userService.getUserById(userId);
-        if(user != null){
-            return ResponseEntity.ok(user);
+        if(user == null){
+            throw new UserNotFoundException("User with id " + userId + " not found");
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(user);
+
     }
 
     @PutMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> updateUserById(@PathVariable Long userId, @RequestBody User userDetails){
         User updatedUser = userService.updateUserById(userId, userDetails);
-        if(updatedUser != null){
-            return ResponseEntity.ok(updatedUser);
+        if(updatedUser == null){
+            throw new UserNotFoundException("User with id " + userId + " not found");
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedUser);
     }
 
     @GetMapping("/email")

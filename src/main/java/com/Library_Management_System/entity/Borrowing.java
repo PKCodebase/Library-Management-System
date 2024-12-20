@@ -2,7 +2,6 @@ package com.Library_Management_System.entity;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDate;
 
@@ -70,8 +69,6 @@ public class Borrowing {
     public void setReturned(boolean returned) {
         this.returned = returned;
     }
-
-
 
     public Borrowing() {
 

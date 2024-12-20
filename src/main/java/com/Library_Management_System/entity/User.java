@@ -35,14 +35,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String name, String email, Long phone, String password, UserRole role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.password = password;
-        this.role = role;
-    }
+
 
     public Long getId() {
         return id;
