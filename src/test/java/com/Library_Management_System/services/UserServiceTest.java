@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -149,7 +148,7 @@ public class UserServiceTest {
     public void deleteUserByIdSuccess(){
         User user1 = UserUtil.userEntity();
         user1.setId(1L);
-        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user1));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         userServiceImpl.deleteUserById(1L);
         verify(userRepository, times(1)).findById(1L);
     }

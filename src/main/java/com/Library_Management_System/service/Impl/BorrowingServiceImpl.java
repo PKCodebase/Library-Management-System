@@ -3,9 +3,7 @@ package com.Library_Management_System.service.Impl;
 import com.Library_Management_System.entity.Book;
 import com.Library_Management_System.entity.Borrowing;
 import com.Library_Management_System.entity.User;
-import com.Library_Management_System.exception.BookNotFoundException;
-import com.Library_Management_System.exception.NoCopiesAvailableException;
-import com.Library_Management_System.exception.UserNotFoundException;
+import com.Library_Management_System.exception.*;
 import com.Library_Management_System.repository.BookRepository;
 import com.Library_Management_System.repository.BorrowingRepository;
 import com.Library_Management_System.repository.UserRepository;
@@ -31,16 +29,16 @@ public class BorrowingServiceImpl implements BorrowingService {
     @Override
     public Borrowing borrowBook(Long bookId, Long userId) throws NoCopiesAvailableException {
         Optional<Book> book = bookRepository.findById(bookId);
-        if(book.isEmpty()){
-            throw new BookNotFoundException("Book not found");
+        if (book.isEmpty()) {
+            throw new BookNotFoundException("Book not found with this id.");
         }
-        Optional<User> user = userRepository.findById(userId);
-        if(user.isEmpty()){
-            throw new UserNotFoundException("User not found");
+        if (book.get().getCopiesAvailable() <= 0) {
+            throw new NoCopiesAvailableException("No copies available for borrowing.");
         }
 
-        if (book.get().getCopiesAvailable() <= 0) {
-            throw new NoCopiesAvailableException("No copies available for this book");
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found with this id.");
         }
 
         Borrowing borrowing = new Borrowing();
@@ -63,19 +61,24 @@ public class BorrowingServiceImpl implements BorrowingService {
             throw new BookNotFoundException("Book not found with this id.");
         }
         if (borrowing.get().isReturned()) {
-            throw new BookNotFoundException("Book already returned");
+            throw new BookAlreadyReturnException("Book already returned");
         }
         borrowing.get().setReturned(true);
         borrowing.get().getBook().setCopiesAvailable(borrowing.get().getBook().getCopiesAvailable() + 1);
         return borrowingRepository.save(borrowing.get());
     }
     @Override
-    public List<Borrowing> getBorrowingsByUser (Long userId){
-        List<Borrowing> borrowing =  borrowingRepository.findByUserId(userId);
-        if(borrowing.isEmpty()){
-            throw new UserNotFoundException("No Book borrowed");
+    public List<Borrowing> getBorrowingsByUserId (Long userId){
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()){
+            throw new UserNotFoundException("User not found with this id.");
         }
-        return borrowingRepository.findByUserId(userId);
+        List<Borrowing> borrowings =  borrowingRepository.findByUserId(userId);
+        if(borrowings.isEmpty()){
+            throw new NoBookBorrowedException("No any book borrowed by this user");
+        }
+
+        return borrowings;
     }
     @Override
     public List<Borrowing> getBorrowingsByBook (Long bookId){
@@ -83,6 +86,7 @@ public class BorrowingServiceImpl implements BorrowingService {
         if(borrowings.isEmpty()){
             throw new BookNotFoundException("No any people borrowed this book");
         }
-        return borrowingRepository.findByBookId(bookId);
+        return borrowings;
     }
+
 }

@@ -25,7 +25,7 @@ public interface BorrowingService {
 
     Borrowing returnBook(Long borrowingId) throws UserNotFoundException, BookNotFoundException;
 
-    List<Borrowing> getBorrowingsByUser (Long userId);
+    List<Borrowing> getBorrowingsByUserId (Long userId);
 
     List<Borrowing> getBorrowingsByBook (Long bookId);
 

@@ -46,5 +46,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNullValueException(NullValueException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(BookAlreadyReturnException.class)
+    public ResponseEntity<String> handleInvalidTokenException(BookAlreadyReturnException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(NoBookBorrowedException.class)
+    public ResponseEntity<String> handleInvalidTokenException(NoBookBorrowedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
 
 }

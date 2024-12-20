@@ -34,7 +34,7 @@ public class BorrowingController {
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getBorrowingsByUser(@PathVariable Long userId) {
-        List<Borrowing> borrowings = borrowingService.getBorrowingsByUser(userId);
+        List<Borrowing> borrowings = borrowingService.getBorrowingsByUserId(userId);
         if (borrowings.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("No borrow record available for user with ID: " + userId);
