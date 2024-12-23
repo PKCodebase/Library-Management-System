@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @RequestMapping("/users")
 @Tag(name = "User Management", description = "Endpoints for managing users")
@@ -29,11 +31,12 @@ public class UserController {
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<User> getUserById(@PathVariable Long userId){
-        User user = userService.getUserById(userId);
-        if(user == null){
-            throw new UserNotFoundException("User with id " + userId + " not found");
-        }
-        return ResponseEntity.ok(user);
+
+            User user = userService.getUserById(userId);
+            if (user == null) {
+                throw new UserNotFoundException("User not found with ID: " + userId);
+            }
+            return ResponseEntity.ok(user);
 
     }
 
@@ -41,8 +44,8 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> updateUserById(@PathVariable Long userId, @RequestBody User userDetails){
         User updatedUser = userService.updateUserById(userId, userDetails);
-        if(updatedUser == null){
-            throw new UserNotFoundException("User with id " + userId + " not found");
+        if (updatedUser == null) {
+            throw new UserNotFoundException("User not found with ID: " + userId);
         }
         return ResponseEntity.ok(updatedUser);
     }
@@ -58,12 +61,11 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteUserById(@PathVariable Long userId) {
-        try {
-            userService.deleteUserById(userId);
-            return ResponseEntity.ok("User deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting user");
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found with ID: " + userId);
         }
+        return ResponseEntity.ok("User deleted successfully");
     }
     @GetMapping("/phone")
     @PreAuthorize("hasRole('ADMIN')")
