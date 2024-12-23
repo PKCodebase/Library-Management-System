@@ -34,8 +34,10 @@ public class AuthController {
             return ResponseEntity.ok(token);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (IncorrectPasswordException | IncorrectEmailException e) {
-            throw new RuntimeException(e);
+        } catch (IncorrectPasswordException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
+        } catch (IncorrectEmailException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect email");
         }
     }
 }
