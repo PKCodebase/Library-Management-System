@@ -1,7 +1,6 @@
 package com.Library_Management_System.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 
 @Entity

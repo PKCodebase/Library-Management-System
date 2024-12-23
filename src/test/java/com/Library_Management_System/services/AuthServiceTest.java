@@ -123,15 +123,4 @@ public class AuthServiceTest {
         verify(authRepository).findByEmail(user.getEmail());
         verify(passwordEncoder).matches("user123", user.getPassword());
     }
-//    @Test
-//    public void loginFailure() {
-//        User user = UserUtil.userEntity();
-//        when(authRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-//        when(passwordEncoder.matches("user123", user.getPassword())).thenReturn(false);
-//        assertThrows(IncorrectPasswordException.class, () -> authServiceImpl.loginUser(user.getEmail(), "user123"));
-//
-//        verify(authRepository).findByEmail(user.getEmail());
-//        verify(passwordEncoder).matches("user123", user.getPassword());
-//    }
-
 }
