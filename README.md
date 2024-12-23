@@ -80,19 +80,17 @@ DELETE /users/{userId}: Delete user by ID.
 
 GET /users/phone :Get User By Phonenumber.
 
-##Test Case:
+##Test Cases:
 
-Controller:
+Controller Test Cases:
+AuthControllerTest -> AuthenticationControllerTest
+BookControllerTest -> BookManagementControllerTest
+BorrowingControllerTest -> BorrowingControllerTest
+UserControllerTest -> UserControllerTest
 
-1.AuthControllerTest
-2.BookControllerTest
-3.BorrowingControllerTest
-4.UserControllerTest
-
-Service:
-1.AuthServiceTest
-2.BookServiceTest
-3.BorrowingServiceTest
-4.UserServiceTest
-
+Service Test Cases:
+AuthServiceTest -> AuthenticationServiceTest
+BookServiceTest -> BookManagementServiceTest
+BorrowingServiceTest -> BorrowingServiceTest
+UserServiceTest -> UserServiceTest
 
